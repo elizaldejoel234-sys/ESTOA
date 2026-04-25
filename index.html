@@ -45,9 +45,13 @@
 
                 <!-- Actions -->
                 <div class="flex items-center gap-2 md:gap-4">
-                    <div class="hidden lg:flex flex-col cursor-pointer border border-transparent hover:border-white p-2 rounded-sm">
-                        <span class="text-[11px] text-zinc-400 leading-none">Hola, Identifícate</span>
-                        <span class="text-sm font-bold leading-none">Cuenta</span>
+                    <!-- User Account -->
+                    <div id="user-menu-btn" class="flex flex-col cursor-pointer border border-transparent hover:border-white p-1 md:p-2 rounded-sm min-w-[100px]">
+                        <span id="user-greeting" class="text-[10px] md:text-[11px] text-zinc-400 leading-none">Hola, Identifícate</span>
+                        <div class="flex items-center gap-1">
+                            <span id="user-name-display" class="text-xs md:text-sm font-bold leading-none">Cuenta y Listas</span>
+                            <i data-lucide="chevron-down" class="w-3 h-3 text-zinc-400"></i>
+                        </div>
                     </div>
                     
                     <button id="cart-toggle" class="relative flex items-center gap-1 px-2 py-2 border border-transparent hover:border-white rounded-sm transition-all">
@@ -87,7 +91,7 @@
     </header>
 
     <main>
-        <!-- Hero Section Optimized for Mobile -->
+        <!-- Hero Section -->
         <section class="relative h-[250px] md:h-[400px] overflow-hidden">
             <div class="absolute inset-0 bg-gradient-to-b from-transparent to-[#F4F7F9] z-10"></div>
             <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=2000&q=80" class="w-full h-full object-cover">
@@ -102,7 +106,7 @@
             </div>
         </section>
 
-        <!-- Product Grid Responsive -->
+        <!-- Product Grid -->
         <div class="max-w-[1600px] mx-auto px-2 md:px-4 -mt-10 md:-mt-20 relative z-30 mb-20">
             <div id="product-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 md:gap-6">
                 <!-- Productos inyectados dinámicamente -->
@@ -110,21 +114,7 @@
         </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-[#232f3e] text-white py-10 md:py-12">
-        <div class="max-w-[1600px] mx-auto px-4 text-center">
-            <div class="flex justify-center items-center gap-2 mb-4">
-                <div class="bg-[#FFD814] text-black font-black px-2 py-0.5 rounded text-lg">A</div>
-                <span class="text-xl font-extrabold tracking-tighter">AURA</span>
-            </div>
-            <p class="text-zinc-400 text-xs md:text-sm mb-6 max-w-md mx-auto">Tu tienda premium en Sangolquí.</p>
-            <div class="mt-8 pt-8 border-t border-zinc-700 text-zinc-500 text-[10px] md:text-xs">
-                © 2024 AURA Corporation S.A. | Sangolquí, Ecuador.
-            </div>
-        </div>
-    </footer>
-
-    <!-- Sidebar Carrito Mobile Friendly -->
+    <!-- Sidebar Carrito -->
     <div id="cart-sidebar" class="fixed inset-y-0 right-0 w-full sm:w-[450px] bg-white shadow-[-20px_0_50px_rgba(0,0,0,0.2)] z-[110] transform translate-x-full transition-transform duration-500 ease-in-out">
         <div class="flex flex-col h-full">
             <div class="p-4 md:p-6 border-b flex justify-between items-center bg-[#0F1111] text-white">
@@ -151,7 +141,54 @@
         </div>
     </div>
 
-    <!-- Quick View Modal Responsive -->
+    <!-- Login Modal -->
+    <div id="login-modal" class="fixed inset-0 z-[150] flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-md" onclick="closeLoginModal()"></div>
+        <div class="bg-white w-[90%] max-w-md rounded-3xl relative z-10 overflow-hidden shadow-2xl transform transition-all">
+            <div class="bg-[#0F1111] p-8 text-center">
+                <div class="inline-block bg-[#FFD814] text-black font-black px-3 py-1 rounded text-2xl mb-4">A</div>
+                <h2 class="text-white text-2xl font-black">Bienvenido a AURA</h2>
+                <p class="text-zinc-400 text-sm">Tu tienda premium en Sangolquí</p>
+            </div>
+            <div class="p-8">
+                <form id="login-form" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-black uppercase text-zinc-500 mb-1">Nombre Completo</label>
+                        <input type="text" id="login-name" required placeholder="Ej: Joel Elizalde" class="w-full px-4 py-3 rounded-xl border border-zinc-200 focus:border-[#FFD814] focus:ring-2 focus:ring-[#FFD814]/20 outline-none transition-all font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-black uppercase text-zinc-500 mb-1">Correo Electrónico</label>
+                        <input type="email" id="login-email" required placeholder="tu@email.com" class="w-full px-4 py-3 rounded-xl border border-zinc-200 focus:border-[#FFD814] focus:ring-2 focus:ring-[#FFD814]/20 outline-none transition-all font-bold">
+                    </div>
+                    <button type="submit" id="login-submit-btn" class="w-full bg-[#0F1111] text-white py-4 rounded-xl font-black hover:bg-zinc-800 transition-all shadow-xl active:scale-95 flex items-center justify-center gap-2">
+                        INICIAR SESIÓN
+                    </button>
+                </form>
+                <p class="text-center text-zinc-400 text-xs mt-6">Simulación de inicio de sesión para fines de demostración.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Dropdown Menu -->
+    <div id="user-dropdown" class="fixed top-16 right-4 md:right-20 bg-white border border-zinc-100 shadow-2xl rounded-2xl p-4 w-64 z-[101] hidden transform origin-top transition-all duration-200 scale-95 opacity-0">
+        <div class="border-b pb-3 mb-3">
+            <p id="dropdown-user-name" class="font-black text-sm"></p>
+            <p id="dropdown-user-email" class="text-xs text-zinc-500"></p>
+        </div>
+        <div class="space-y-1">
+            <a href="#" class="flex items-center gap-3 p-2 hover:bg-zinc-50 rounded-lg text-sm font-bold transition-colors">
+                <i data-lucide="package" class="w-4 h-4"></i> Mis Pedidos
+            </a>
+            <a href="#" class="flex items-center gap-3 p-2 hover:bg-zinc-50 rounded-lg text-sm font-bold transition-colors">
+                <i data-lucide="heart" class="w-4 h-4"></i> Lista de Deseos
+            </a>
+            <button id="logout-btn" class="w-full flex items-center gap-3 p-2 hover:bg-red-50 text-red-600 rounded-lg text-sm font-black transition-colors mt-2 border-t pt-3">
+                <i data-lucide="log-out" class="w-4 h-4"></i> Cerrar Sesión
+            </button>
+        </div>
+    </div>
+
+    <!-- Quick View Modal -->
     <div id="quick-view-modal" class="fixed inset-0 z-[120] flex items-center justify-center hidden">
         <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeModal()"></div>
         <div class="bg-white w-full max-w-4xl max-h-[90vh] overflow-y-auto md:overflow-hidden rounded-3xl relative z-10 flex flex-col md:flex-row m-2 md:m-4 shadow-2xl">
@@ -162,6 +199,7 @@
             <div class="w-full md:w-1/2 p-6 md:p-12 flex flex-col">
                 <span id="modal-cat" class="text-[10px] md:text-sm font-black text-orange-600 uppercase tracking-widest mb-2"></span>
                 <h2 id="modal-name" class="text-xl md:text-3xl font-extrabold mb-4 md:mb-6 leading-tight"></h2>
+                <div id="modal-rating" class="flex items-center gap-2 mb-4"></div>
                 <p id="modal-desc" class="text-zinc-600 mb-6 md:mb-8 text-sm md:text-lg leading-relaxed"></p>
                 <div class="mt-auto pt-4 md:pt-8 border-t flex items-center justify-between">
                     <span id="modal-price" class="text-2xl md:text-4xl font-black text-[#B12704]"></span>
