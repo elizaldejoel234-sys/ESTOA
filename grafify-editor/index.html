@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grafify - Editor de Imágenes Completo</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        @font-face {
+            font-family: 'Faculty Glyphic';
+            src: url('https://fonts.cdnfonts.com/css/faculty-glyphic') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="header">
+            <div class="logo"><span class="logo-text" style="font-family: 'Faculty Glyphic', cursive;">grafify</span></div>
+            <nav class="nav-menu">
+                <button class="nav-btn active" data-section="edit">Editar</button>
+                <button class="nav-btn" data-section="filters">Filtros</button>
+                <button class="nav-btn" data-section="text">Texto</button>
+                <button class="nav-btn" data-section="frames">Marcos</button>
+                <button class="nav-btn" data-section="background">Fondo</button>
+            </nav>
+            <div class="header-actions">
+                <button class="btn btn-secondary" id="undoBtn">↩ Deshacer</button>
+                <button class="btn btn-secondary" id="redoBtn">↪ Rehacer</button>
+                <button class="btn btn-primary" id="saveBtn">💾 Guardar</button>
+                <button class="btn btn-primary" id="exportBtn">📤 Exportar</button>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="canvas-container">
+                <canvas id="imageCanvas"></canvas>
+                <div class="zoom-controls">
+                    <button class="zoom-btn" id="zoomOut">-</button>
+                    <span id="zoomValue">100%</span>
+                    <button class="zoom-btn" id="zoomIn">+</button>
+                    <button class="zoom-btn" id="resetZoom">🔍</button>
+                </div>
+            </div>
+
+            <aside class="toolbar">
+                <section class="tool-section active" id="editSection">
+                    <h3>Herramientas de Edición</h3>
+                    <div class="tool-group">
+                        <h4>Herramientas</h4>
+                        <div class="tool-buttons">
+                            <button class="tool-btn active" data-tool="select">📍 Seleccionar</button>
+                            <button class="tool-btn" data-tool="crop">✂️ Recortar</button>
+                            <button class="tool-btn" data-tool="brush">🖌️ Pincel</button>
+                            <button class="tool-btn" data-tool="eraser">🧽 Borrador</button>
+                            <button class="tool-btn" data-tool="fill">🎨 Relleno</button>
+                        </div>
+                    </div>
+                    <div class="tool-group">
+                        <h4>Ajustes Básicos</h4>
+                        <div class="slider-control">
+                            <label>Brillo</label>
+                            <input type="range" id="brightnessSlider" min="0" max="200" value="100">
+                            <span class="slider-value" id="brightnessValue">100%</span>
+                        </div>
+                        <div class="slider-control">
+                            <label>Contraste</label>
+                            <input type="range" id="contrastSlider" min="0" max="200" value="100">
+                            <span class="slider-value" id="contrastValue">100%</span>
+                        </div>
+                        <div class="slider-control">
+                            <label>Saturación</label>
+                            <input type="range" id="saturationSlider" min="0" max="200" value="100">
+                            <span class="slider-value" id="saturationValue">100%</span>
+                        </div>
+                    </div>
+                    <div class="tool-group">
+                        <h4>Color del Pincel</h4>
+                        <div class="color-picker">
+                            <input type="color" id="brushColor" value="#ff0000">
+                            <div class="color-swatch" id="brushColorSwatch"></div>
+                        </div>
+                        <div class="slider-control">
+                            <label>Tamaño del Pincel</label>
+                            <input type="range" id="brushSize" min="1" max="50" value="5">
+                            <span class="slider-value" id="brushSizeValue">5px</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="tool-section" id="filtersSection">
+                    <h3>Filtros</h3>
+                    <div class="filter-grid">
+                        <div class="filter-item active" data-filter="none"><div class="filter-preview" style="background: linear-gradient(45deg, #ddd, #aaa);"></div><span>Normal</span></div>
+                        <div class="filter-item" data-filter="grayscale"><div class="filter-preview" style="background: linear-gradient(45deg, #555, #333); filter: grayscale(100%);"></div><span>Escala de Grises</span></div>
+                        <div class="filter-item" data-filter="sepia"><div class="filter-preview" style="background: linear-gradient(45deg, #704214, #3e2723); filter: sepia(100%);"></div><span>Sépia</span></div>
+                        <div class="filter-item" data-filter="invert"><div class="filter-preview" style="background: linear-gradient(45deg, #333, #000); filter: invert(100%);"></div><span>Invertir</span></div>
+                        <div class="filter-item" data-filter="blur"><div class="filter-preview" style="background: linear-gradient(45deg, #4a90e2, #1a5fb4); filter: blur(3px);"></div><span>Desenfocar</span></div>
+                        <div class="filter-item" data-filter="vintage"><div class="filter-preview" style="background: linear-gradient(45deg, #8b4513, #654321); filter: sepia(50%) brightness(90%);"></div><span>Vintage</span></div>
+                        <div class="filter-item" data-filter="warm"><div class="filter-preview" style="background: linear-gradient(45deg, #ff6b35, #f7931e); filter: hue-rotate(-10deg) saturate(120%);"></div><span>Cálido</span></div>
+                        <div class="filter-item" data-filter="cool"><div class="filter-preview" style="background: linear-gradient(45deg, #4ecdc4, #44a08d); filter: hue-rotate(180deg) saturate(120%);"></div><span>Frío</span></div>
+                    </div>
+                    <div class="tool-group">
+                        <h4>Intensidad del Filtro</h4>
+                        <div class="slider-control">
+                            <input type="range" id="filterIntensity" min="0" max="100" value="100">
+                            <span class="slider-value" id="filterIntensityValue">100%</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="tool-section" id="textSection">
+                    <h3>Texto</h3>
+                    <div class="tool-group">
+                        <h4>Añadir Texto</h4>
+                        <textarea id="textInput" placeholder="Escribe tu texto aquí..." rows="3"></textarea>
+                        <button class="btn btn-primary" id="addTextBtn">Añadir Texto</button>
+                    </div>
+                    <div class="tool-group">
+                        <h4>Fuentes</h4>
+                        <div class="font-grid">
+                            <div class="font-item active" data-font="'Faculty Glyphic', cursive"><span style="font-family: 'Faculty Glyphic', cursive;">Faculty Glyphic</span></div>
+                            <div class="font-item" data-font="'Arial', sans-serif"><span style="font-family: Arial, sans-serif;">Arial</span></div>
+                            <div class="font-item" data-font="'Times New Roman', serif"><span style="font-family: 'Times New Roman', serif;">Times New Roman</span></div>
+                            <div class="font-item" data-font="'Courier New', monospace"><span style="font-family: 'Courier New', monospace;">Courier New</span></div>
+                            <div class="font-item" data-font="'Georgia', serif"><span style="font-family: Georgia, serif;">Georgia</span></div>
+                            <div class="font-item" data-font="'Verdana', sans-serif"><span style="font-family: Verdana, sans-serif;">Verdana</span></div>
+                        </div>
+                    </div>
+                    <div class="tool-group">
+                        <h4>Estilo del Texto</h4>
+                        <div class="color-picker">
+                            <label>Color del Texto</label>
+                            <input type="color" id="textColor" value="#000000">
+                            <div class="color-swatch" id="textColorSwatch"></div>
+                        </div>
+                        <div class="slider-control">
+                            <label>Tamaño de Fuente</label>
+                            <input type="range" id="textSize" min="8" max="100" value="24">
+                            <span class="slider-value" id="textSizeValue">24px</span>
+                        </div>
+                        <div class="text-style-buttons">
+                            <button class="style-btn" id="boldBtn">B</button>
+                            <button class="style-btn" id="italicBtn">I</button>
+                            <button class="style-btn" id="underlineBtn">U</button>
+                            <button class="style-btn" id="leftAlignBtn">≡</button>
+                            <button class="style-btn" id="centerAlignBtn">≡</button>
+                            <button class="style-btn" id="rightAlignBtn">≡</button>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="tool-section" id="framesSection">
+                    <h3>Marcos y Bordes</h3>
+                    <div class="tool-group">
+                        <h4>Estilo de Marco</h4>
+                        <div class="frame-grid">
+                            <div class="frame-item active" data-frame="none" data-frame-color="#000000" data-frame-width="0"><div class="frame-preview" style="border: 2px solid #ccc; background: white;"></div><span>Ninguno</span></div>
+                            <div class="frame-item" data-frame="solid" data-frame-color="#000000" data-frame-width="10"><div class="frame-preview" style="border: 10px solid #000; background: white;"></div><span>Sólido</span></div>
+                            <div class="frame-item" data-frame="double" data-frame-color="#000000" data-frame-width="8"><div class="frame-preview" style="border: 8px double #000; background: white;"></div><span>Doble</span></div>
+                            <div class="frame-item" data-frame="dashed" data-frame-color="#000000" data-frame-width="8"><div class="frame-preview" style="border: 8px dashed #000; background: white;"></div><span>Punteado</span></div>
+                            <div class="frame-item" data-frame="dotted" data-frame-color="#000000" data-frame-width="8"><div class="frame-preview" style="border: 8px dotted #000; background: white;"></div><span>Puntos</span></div>
+                            <div class="frame-item" data-frame="ridge" data-frame-color="#000000" data-frame-width="10"><div class="frame-preview" style="border: 10px ridge #000; background: white;"></div><span>Relieve</span></div>
+                        </div>
+                    </div>
+                    <div class="tool-group">
+                        <h4>Personalizar Marco</h4>
+                        <div class="color-picker">
+                            <label>Color del Marco</label>
+                            <input type="color" id="frameColor" value="#000000">
+                            <div class="color-swatch" id="frameColorSwatch"></div>
+                        </div>
+                        <div class="slider-control">
+                            <label>Grosor del Marco</label>
+                            <input type="range" id="frameWidth" min="1" max="50" value="10">
+                            <span class="slider-value" id="frameWidthValue">10px</span>
+                        </div>
+                    </div>
+                    <div class="tool-group">
+                        <h4>Marcos Decorativos</h4>
+                        <div class="decorative-frame-grid">
+                            <div class="decorative-frame-item" data-decorative-frame="polaroid"><div class="decorative-frame-preview polaroid-frame"></div><span>Polaroid</span></div>
+                            <div class="decorative-frame-item" data-decorative-frame="vintage"><div class="decorative-frame-preview vintage-frame"></div><span>Vintage</span></div>
+                            <div class="decorative-frame-item" data-decorative-frame="modern"><div class="decorative-frame-preview modern-frame"></div><span>Moderno</span></div>
+                            <div class="decorative-frame-item" data-decorative-frame="golden"><div class="decorative-frame-preview golden-frame"></div><span>Dorado</span></div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="tool-section" id="backgroundSection">
+                    <h3>Fondo</h3>
+                    <div class="tool-group">
+                        <h4>Tipo de Fondo</h4>
+                        <div class="bg-type-buttons">
+                            <button class="bg-type-btn active" data-bg-type="color">Color Sólido</button>
+                            <button class="bg-type-btn" data-bg-type="gradient">Degradado</button>
+                            <button class="bg-type-btn" data-bg-type="image">Imagen</button>
+                        </div>
+                    </div>
+                    <div class="bg-options" id="colorBgOptions">
+                        <div class="tool-group">
+                            <h4>Color de Fondo</h4>
+                            <div class="color-picker">
+                                <input type="color" id="bgColor" value="#ffffff">
+                                <div class="color-swatch" id="bgColorSwatch"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-options" id="gradientBgOptions" style="display: none;">
+                        <div class="tool-group">
+                            <h4>Degradado</h4>
+                            <div class="gradient-controls">
+                                <div class="gradient-color">
+                                    <label>Color 1</label>
+                                    <input type="color" id="gradientColor1" value="#ff0000">
+                                </div>
+                                <div class="gradient-color">
+                                    <label>Color 2</label>
+                                    <input type="color" id="gradientColor2" value="#0000ff">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tool-group">
+                        <h4>Fondos Predefinidos</h4>
+                        <div class="preset-bg-grid">
+                            <div class="preset-bg-item" data-preset-bg="#ffffff" style="background: white;"></div>
+                            <div class="preset-bg-item" data-preset-bg="#000000" style="background: black;"></div>
+                            <div class="preset-bg-item" data-preset-bg="#f0f0f0" style="background: #f0f0f0;"></div>
+                            <div class="preset-bg-item" data-preset-bg="#333333" style="background: #333333;"></div>
+                            <div class="preset-bg-item" data-preset-bg="#ff6b6b" style="background: #ff6b6b;"></div>
+                            <div class="preset-bg-item" data-preset-bg="#4ecdc4" style="background: #4ecdc4;"></div>
+                            <div class="preset-bg-item" data-preset-bg="#45b7d1" style="background: #45b7d1;"></div>
+                            <div class="preset-bg-item" data-preset-bg="#f9ca24" style="background: #f9ca24;"></div>
+                            <div class="preset-bg-item" data-preset-bg="linear-gradient(45deg, #ff9a9e, #fad0c4)" style="background: linear-gradient(45deg, #ff9a9e, #fad0c4);"></div>
+                            <div class="preset-bg-item" data-preset-bg="linear-gradient(45deg, #84fab0, #8fd3f4)" style="background: linear-gradient(45deg, #84fab0, #8fd3f4);"></div>
+                        </div>
+                    </div>
+                </section>
+            </aside>
+        </main>
+
+        <footer class="status-bar">
+            <div class="status-left">
+                <span id="imageSize">0 x 0 px</span>
+            </div>
+            <div class="status-center">
+                <span id="cursorPosition">X: 0, Y: 0</span>
+            </div>
+        </footer>
+    </div>
+
+    <div class="modal" id="saveModal">
+        <div class="modal-content">
+            <h3>Guardar Imagen</h3>
+            <div class="modal-body">
+                <div class="save-options">
+                    <div class="save-option">
+                        <label>Formato</label>
+                        <select id="saveFormat"><option value="png">PNG</option><option value="jpeg">JPEG</option><option value="webp">WebP</option></select>
+                    </div>
+                    <div class="save-option">
+                        <label>Calidad</label>
+                        <input type="range" id="saveQuality" min="0" max="100" value="92"><span class="slider-value" id="saveQualityValue">92%</span>
+                    </div>
+                    <div class="save-option">
+                        <label>Nombre</label>
+                        <input type="text" id="saveFileName" value="grafify-image">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelSaveBtn">Cancelar</button>
+                <button class="btn btn-primary" id="confirmSaveBtn">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="exportModal">
+        <div class="modal-content">
+            <h3>Exportar Imagen</h3>
+            <div class="modal-body">
+                <div class="export-options">
+                    <div class="export-option">
+                        <label>Formato</label>
+                        <select id="exportFormat"><option value="png">PNG</option><option value="jpeg">JPEG</option><option value="webp">WebP</option></select>
+                    </div>
+                    <div class="export-option">
+                        <label>Calidad</label>
+                        <input type="range" id="exportQuality" min="0" max="100" value="100"><span class="slider-value" id="exportQualityValue">100%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelExportBtn">Cancelar</button>
+                <button class="btn btn-primary" id="confirmExportBtn">Exportar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="textEditModal">
+        <div class="modal-content">
+            <h3>Editar Texto</h3>
+            <div class="modal-body">
+                <div class="text-edit-options">
+                    <div class="text-edit-option">
+                        <label>Texto</label>
+                        <textarea id="editTextInput" rows="3"></textarea>
+                    </div>
+                    <div class="text-edit-option">
+                        <label>Fuente</label>
+                        <select id="editTextFont">
+                            <option value="'Faculty Glyphic', cursive">Faculty Glyphic</option>
+                            <option value="'Arial', sans-serif">Arial</option>
+                            <option value="'Times New Roman', serif">Times New Roman</option>
+                        </select>
+                    </div>
+                    <div class="text-edit-option">
+                        <label>Tamaño</label>
+                        <input type="range" id="editTextSize" min="8" max="100" value="24"><span class="slider-value" id="editTextSizeValue">24px</span>
+                    </div>
+                    <div class="text-edit-option">
+                        <label>Color</label>
+                        <input type="color" id="editTextColor" value="#000000">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelTextEditBtn">Cancelar</button>
+                <button class="btn btn-primary" id="confirmTextEditBtn">Aplicar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="loadImageModal">
+        <div class="modal-content">
+            <h3>Cargar Imagen</h3>
+            <div class="modal-body">
+                <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+                <button class="btn btn-primary" id="selectImageBtn">Seleccionar Imagen</button>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelLoadImageBtn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
